@@ -1,0 +1,50 @@
+import RPi.GPIO as GPIO
+import time
+servom =17
+outPin = 5
+inPin = 27
+ir = 26
+red=22
+yellow=23
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servom, GPIO.OUT)
+
+GPIO.setup(outPin, GPIO.OUT)
+GPIO.setup(inPin, GPIO.IN)
+GPIO.setup(ir, GPIO.IN)
+GPIO.setup(red, GPIO.OUT)
+GPIO.setup(yellow, GPIO.OUT)
+pwm= GPIO.PWM(servom,50)
+pwm.start(servom)
+
+def dutycycle(dp):
+    for i in range(0,1):
+        dc = 1. / 18. * (dp) + 2
+        pwm.ChangeDutyCycle(dc)
+
+while(1):
+    value = GPIO.input(inPin)
+    state= GPIO.input(ir)
+
+    dutycycle(90)
+    if(state == 0):
+        value = GPIO.input(inPin)
+        print("value", value)
+        if(value == 1):
+            time.sleep(5)
+            print("45", value)
+            dutycycle(45)
+            GPIO.output(red, 1)
+            time.sleep(5)
+	 elif(value== 0):
+             time.sleep(5)
+             GPIO.output(yellow,1)
+             print("135", value)
+             dutycycle(135)
+             time.sleep(5)
+             GPIO.output(yellow,0)
+
+pwm.stop()
+GPIO.cleanup()
+
